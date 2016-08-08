@@ -10,12 +10,18 @@ var applyPatches = VDiff['applyPatches'];
 var buildDOMTree = VDiff['buildDOMTree'];
 
 function build(count) {
-  var n = new VNode(count, null,'p');
+  var n = new VNode('root', null,'p');
+
   if (count % 2 == 1) {
-    n.appendChild(new VNode(count*2, null,'h1'));
+    var child = new VNode(count, null,'h1');
+    child.appendChild(new VNode(count*2, null,'h1'));
   } else {
-    n.appendChild(new VNode(count*2, null,'p'));
+    var child = new VNode(count, null,'p');
+    child.appendChild(new VNode(count*2, null,'p'));
   }
+
+  n.appendChild(child);
+  n.appendChild(new VNode('hello', null,'p'));
 
   return n;
 }

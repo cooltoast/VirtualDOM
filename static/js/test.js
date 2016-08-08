@@ -40,22 +40,22 @@ describe('VirtualDiff', function() {
       assert(_.isEqual(a,b));
     });
 
-    it('should index small trees', function() {
+    it('should index medium trees', function() {
       a = new VNode(1, null, '');
       var aChild = new VNode(2,null, '');
       aChild.appendChild(new VNode(3,null, ''));
+      aChild.appendChild(new VNode(4,null, ''));
       a.appendChild(aChild);
-      aChild = new VNode(4,null, '');
-      aChild.appendChild(new VNode(5,null, ''));
-      a.appendChild(aChild);
+      a.appendChild(new VNode(5,null, ''));
+      a.appendChild(new VNode(6,null, ''));
 
-      b = new VNode(1, null, '', 0);
-      var bChild = new VNode(2,null, '', 1);
-      bChild.appendChild(new VNode(3,null, '', 2));
+      b = new VNode(1, null, '',0);
+      var bChild = new VNode(2,null, '',1);
+      bChild.appendChild(new VNode(3,null, '',2));
+      bChild.appendChild(new VNode(4,null, '',3));
       b.appendChild(bChild);
-      bChild = new VNode(4,null, '', 3);
-      bChild.appendChild(new VNode(5,null, '',4));
-      b.appendChild(bChild);
+      b.appendChild(new VNode(5,null, '',4));
+      b.appendChild(new VNode(6,null, '',5));
 
       numberTree(a);
       assert(_.isEqual(a,b));
