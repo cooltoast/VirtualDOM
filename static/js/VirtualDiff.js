@@ -91,17 +91,17 @@ function appendPatch(patches, patch, index) {
   return;
 }
 
-function mapDOM(dom, index, map, patchIndices) {
-  if (dom == null) {
+function mapDOM(root, index, DOMmap, patchIndices) {
+  if (root == null) {
     return index;
   }
 
   if (patchIndices.indexOf(index) > -1) {
-    map[index] = dom;
+    DOMmap[index] = root;
   }
-  if (dom.children != null) {
-    for (var i = 0; i < dom.children.length; ++i) {
-      index = mapDOM(dom.children[i], index + 1, map, patchIndices);
+  if (root.children != null) {
+    for (var i = 0; i < root.children.length; ++i) {
+      index = mapDOM(root.children[i], index + 1, DOMmap, patchIndices);
     }
   }
   return index;
@@ -164,7 +164,7 @@ function applyPatch(dom, patch) {
   return result;
 };
 
-function applyPatches(dom, patches) {
+function getPatchIndices(patches) {
   var patchIndices = [];
   for (var key in patches) {
     if (patches.hasOwnProperty(key)) {
@@ -172,16 +172,22 @@ function applyPatches(dom, patches) {
     }
   }
 
+  return patchIndices;
+}
+
+
+function applyPatches(root, patches) {
+  var patchIndices = getPatchIndices(patches);
+
   var DOMmap = {}
-  mapDOM(dom, 0, DOMmap, patchIndices);
+  mapDOM(root, 0, DOMmap, patchIndices);
 
-  var root = null;
-
+  var newRoot = null;
   for (var index in DOMmap) {
     if (DOMmap.hasOwnProperty(index)) {
       // keep track if root is modified
       if (index == 0) {
-        root = applyPatch(DOMmap[index], patches[index]);
+        newRoot = applyPatch(DOMmap[index], patches[index]);
       } else {
         applyPatch(DOMmap[index], patches[index]);
       }
@@ -189,7 +195,7 @@ function applyPatches(dom, patches) {
   }
 
   // return new root if root was modified
-  return (root == null) ? dom : root;
+  return (newRoot != null) ? newRoot : root;
 };
 
 module.exports = {'numberTree':numberTree, 'diff':diff, 'Patch':Patch,'applyPatches':applyPatches,'buildDOMTree':buildDOMTree};
