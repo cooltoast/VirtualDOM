@@ -1,13 +1,13 @@
 var VNode = require('./VirtualNode');
-var VDiff = require('./VirtualDiff');
+var VirtualDiff = require('./VirtualDiff');
+var ApplyPatches = require('./ApplyPatches');
+var Patch = require('./Patch');
 var _ = require('lodash');
 
-
-var numberTree = VDiff['numberTree'];
-var diff = VDiff['diff'];
-var Patch = VDiff['Patch'];
-var applyPatches = VDiff['applyPatches'];
-var buildDOMTree = VDiff['buildDOMTree'];
+var numberTree = VirtualDiff['numberTree'];
+var diff = VirtualDiff['diff'];
+var applyPatches = ApplyPatches['applyPatches'];
+var buildDOMTree = ApplyPatches['buildDOMTree'];
 
 function render1(count) {
   var n = new VNode('root', null,'p');
