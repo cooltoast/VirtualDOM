@@ -26,6 +26,7 @@ function numberTreeHelper(t, index) {
 function diff(t1, t2) {
   validateTree(t1);
   validateTree(t2);
+  numberTree(t1);
   var patches = {};
   diffHelper(t1, t2, patches);
   return patches;
@@ -100,7 +101,7 @@ function mapDOM(dom, index, map, patchIndices) {
   return index;
 };
 
-function buildSubTree(t) {
+function buildDOMTree(t) {
   if (t.value == null) {
     return null;
   }
@@ -109,7 +110,7 @@ function buildSubTree(t) {
   dom.innerText = t.value;
 
   for (var i = 0; i < t.numChildren(); i++) {
-    var child = buildSubTree(t.children[i]);
+    var child = buildDOMTree(t.children[i]);
     if (child != null) {
       dom.appendChild(child);
     }
@@ -119,22 +120,30 @@ function buildSubTree(t) {
 }
 
 function applyPatch(dom, patch) {
+  var root = null;
+
   for (var i in patch) {
     var p = patch[i];
     switch(p.action) {
       case "delete":
+        root = dom.parentNode;
         dom.parentNode.removeChild(dom);
         break;
       case "replace":
-        var newDom = buildSubTree(p.node);
+        var newDom = buildDOMTree(p.node);
         var parent = dom.parentNode;
-        parent.removeChild(dom);
         parent.appendChild(newDom);
+        parent.removeChild(dom);
+        root = newDom;
         break;
       case "insert":
-        dom.appendChild(buildSubTree(p.node));
+        var newDom = buildDOMTree(p.node);
+        dom.appendChild(newDom);
+        root = newDom;
     }
   }
+
+  return root;
 };
 
 function applyPatches(dom, patches) {
@@ -147,14 +156,22 @@ function applyPatches(dom, patches) {
 
   var DOMmap = {}
   mapDOM(dom, 0, DOMmap, patchIndices);
-  
+
+  var root = null;
+
   for (var index in DOMmap) {
     if (DOMmap.hasOwnProperty(index)) {
-      applyPatch(DOMmap[index], patches[index]);
+      // keep track if root is modified
+      if (index == 0) {
+        root = applyPatch(DOMmap[index], patches[index]);
+      } else {
+        applyPatch(DOMmap[index], patches[index]);
+      }
     }
   }
 
-  return;
+  // return new root if root was modified
+  return (root == null) ? dom : root;
 };
 
-module.exports = {'numberTree':numberTree, 'diff':diff, 'Patch':Patch,'applyPatches':applyPatches};
+module.exports = {'numberTree':numberTree, 'diff':diff, 'Patch':Patch,'applyPatches':applyPatches,'buildDOMTree':buildDOMTree};
