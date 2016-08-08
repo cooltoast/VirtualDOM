@@ -84,4 +84,77 @@ function inspectChildren(t1, t2, patches) {
   }
 };
 
-module.exports = {'numberTree':numberTree, 'diff':diff, 'Patch':Patch};
+function mapDOM(dom, index, map, patchIndices) {
+  if (dom == null) {
+    return index;
+  }
+
+  if (patchIndices.indexOf(index) > -1) {
+    map[index] = dom;
+  }
+  if (dom.children != null) {
+    for (var i = 0; i < dom.children.length; ++i) {
+      index = mapDOM(dom.children[i], index + 1, map, patchIndices);
+    }
+  }
+  return index;
+};
+
+function buildSubTree(t) {
+  if (t.value == null) {
+    return null;
+  }
+
+  var dom = document.createElement('div');
+  dom.innerText = t.value;
+
+  for (var i = 0; i < t.numChildren(); i++) {
+    var child = buildSubTree(t.children[i]);
+    if (child != null) {
+      dom.appendChild(child);
+    }
+  }
+
+  return dom;
+}
+
+function applyPatch(dom, patch) {
+  for (var i in patch) {
+    var p = patch[i];
+    switch(p.action) {
+      case "delete":
+        dom.parentNode.removeChild(dom);
+        break;
+      case "replace":
+        var newDom = buildSubTree(p.node);
+        var parent = dom.parentNode;
+        parent.removeChild(dom);
+        parent.appendChild(newDom);
+        break;
+      case "insert":
+        dom.appendChild(buildSubTree(p.node));
+    }
+  }
+};
+
+function applyPatches(dom, patches) {
+  var patchIndices = [];
+  for (var key in patches) {
+    if (patches.hasOwnProperty(key)) {
+      patchIndices.push(parseInt(key));
+    }
+  }
+
+  var DOMmap = {}
+  mapDOM(dom, 0, DOMmap, patchIndices);
+  
+  for (var index in DOMmap) {
+    if (DOMmap.hasOwnProperty(index)) {
+      applyPatch(DOMmap[index], patches[index]);
+    }
+  }
+
+  return;
+};
+
+module.exports = {'numberTree':numberTree, 'diff':diff, 'Patch':Patch,'applyPatches':applyPatches};

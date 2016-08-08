@@ -5,6 +5,7 @@ var _ = require('lodash');
 var numberTree = VDiff['numberTree'];
 var diff = VDiff['diff'];
 var Patch = VDiff['Patch']
+var applyPatches = VDiff['applyPatches']
 
 function assert(condition, message) {
   if (!condition) {
@@ -13,6 +14,28 @@ function assert(condition, message) {
 }
 
 var a,b,c,d,e,f;
+
+/*
+applyPatches(document.body.children[0], {2:[new Patch('delete')]});
+
+a = new VNode(10, null);
+applyPatches(document.body.children[0], {3:[new Patch('insert', a)]});
+
+b = new VNode(500, null);
+c = new VNode(1000, null);
+c.appendChild(b);
+applyPatches(document.body.children[0], {2:[new Patch('replace', c)]});
+*/
+
+var count = 0;
+setInterval(function () {
+    count++;
+    a = new VNode(count, null);
+    applyPatches(document.body.children[0], {5:[new Patch('replace', a)]});
+
+}, 1000);
+
+/* *** */
 
 a = new VNode(1, null);
 b = new VNode(2, null);
