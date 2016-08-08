@@ -21,7 +21,7 @@ function build(count) {
   }
 
   n.appendChild(child);
-  n.appendChild(new VNode('hello', null,'p'));
+  n.appendChild(new VNode('leaf', null,'p'));
 
   return n;
 }

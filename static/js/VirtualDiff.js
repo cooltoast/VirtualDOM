@@ -132,8 +132,7 @@ function applyPatch(dom, patch) {
       case "replace":
         var newDom = buildDOMTree(p.node);
         var parent = dom.parentNode;
-        parent.insertBefore(newDom, dom);
-        parent.removeChild(dom);
+        parent.replaceChild(newDom, dom);
         root = newDom;
         break;
       case "insert":
