@@ -31,4 +31,9 @@ VNode.prototype.removeChild = function(child) {
   return child[0];
 }
 
+VNode.prototype.isSimpleNodename = function() {
+  var simpleNodenames = ['div', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+  return (simpleNodenames.indexOf(this.nodeName) > -1);
+}
+
 module.exports = VNode;

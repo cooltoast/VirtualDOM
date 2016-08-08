@@ -1,4 +1,5 @@
 // return t2 subtree to overwrite on t1
+// actions: "delete", "insert", "node_replace", "tree_replace"
 function Patch(action, node) {
   this.action = action;
   this.node = node;
@@ -39,51 +40,56 @@ function validateTree(t) {
 }
 
 function diffHelper(t1, t2, patches) {
-  if ((t1.value != t2.value) || (t1.nodeName != t2.nodeName)) {
-    patches[t1.index] = [new Patch('replace', t2)];
-  } else {
-    inspectChildren(t1, t2, patches);
+  var p;
+
+  if (t1.nodeName == t2.nodeName) {
+    if (t1.value != t2.value) {
+      p = new Patch('node_replace', t2);
+      appendPatch(patches, p, t1.index);
+    }
+  } else { // ((t1.nodeName != t2.nodeName))
+    if (t1.isSimpleNodename() && t2.isSimpleNodename()) {
+      p = new Patch('node_replace', t2);
+      appendPatch(patches, p, t1.index);
+    } else {
+      p = new Patch('tree_replace', t2);
+      appendPatch(patches, p, t1.index);
+      return;
+    }
   }
+
+  inspectChildren(t1, t2, patches);
 };
 
 function inspectChildren(t1, t2, patches) {
   var t1C = t1.numChildren();
   var t2C = t2.numChildren();
   var l = Math.max(t1C, t2C);
+  var p;
 
-  if (t2C > 0) {
-    for (var i = 0; i < l; ++i) {
-      if (i >= t1C) { // insert remaining t2 children
-        var p = new Patch('insert', t2.children[i])
-        if (_.isArrayLike(patches[t1.index])) {
-          patches[t1.index].push(p);
-        } else {
-          patches[t1.index] = [p];
-        }
+  for (var i = 0; i < l; ++i) {
+    if (i < t1C && i < t2C) { // compare both children
+      diffHelper(t1.children[i], t2.children[i], patches);
 
-      } else if (i >= t2C) { // delete remaining t1 children
-        var p = new Patch('delete');
-        if (_.isArrayLike(patches[t1.children[i].index])) {
-          patches[t1.children[i].index].push(p);
-        } else {
-          patches[t1.children[i].index] = [p];
-        }
+    } else if (i >= t1C) { // insert remaining t2 children
+      p = new Patch('insert', t2.children[i])
+      appendPatch(patches, p, t1.index);
 
-      } else { // compare both children
-        diffHelper(t1.children[i], t2.children[i], patches);
-      }
-    }
-  } else { // t2C == 0, delete all t1 children
-    for (var i = 0; i < t1C; ++i) {
-      var p = new Patch('delete');
-      if (_.isArrayLike(patches[t1.children[i].index])) {
-        patches[t1.children[i].index].push(p);
-      } else {
-        patches[t1.children[i].index] = [p];
-      }
+    } else { // (i >= t2C) delete remaining t1 children
+      p = new Patch('delete');
+      appendPatch(patches, p, t1.children[i].index);
     }
   }
 };
+
+function appendPatch(patches, patch, index) {
+  if (_.isArrayLike(patches[index])) {
+    patches[index].push(patch);
+  } else {
+    patches[index] = [patch];
+  }
+  return;
+}
 
 function mapDOM(dom, index, map, patchIndices) {
   if (dom == null) {
@@ -106,8 +112,7 @@ function buildDOMTree(t) {
     return null;
   }
 
-  var dom = document.createElement(t.nodeName.toLowerCase());
-  dom.innerText = t.value;
+  var dom = createDOMNode(t);
 
   for (var i = 0; i < t.numChildren(); i++) {
     var child = buildDOMTree(t.children[i]);
@@ -119,30 +124,44 @@ function buildDOMTree(t) {
   return dom;
 }
 
+function createDOMNode(vNode) {
+  var dom = document.createElement(vNode.nodeName.toLowerCase());
+  dom.innerText = vNode.value;
+  return dom;
+}
+
 function applyPatch(dom, patch) {
-  var root = null;
+  var result = null;
 
   for (var i in patch) {
     var p = patch[i];
     switch(p.action) {
       case "delete":
-        root = dom.parentNode;
-        dom.parentNode.removeChild(dom);
+        result = dom.parentNode;
+        result.removeChild(dom);
         break;
-      case "replace":
+      case "node_replace":
+        var newDom = createDOMNode(p.node);
+        //append children to newdom node and replace
+        while(dom.children.length > 0) {
+          newDom.appendChild(dom.children[0]);
+        }
+        dom.parentNode.replaceChild(newDom, dom);
+        result = newDom
+        break;
+      case "tree_replace":
         var newDom = buildDOMTree(p.node);
-        var parent = dom.parentNode;
-        parent.replaceChild(newDom, dom);
-        root = newDom;
+        dom.parentNode.replaceChild(newDom, dom);
+        result = newDom
         break;
       case "insert":
         var newDom = buildDOMTree(p.node);
         dom.appendChild(newDom);
-        root = newDom;
+        result = dom;
     }
   }
 
-  return root;
+  return result;
 };
 
 function applyPatches(dom, patches) {

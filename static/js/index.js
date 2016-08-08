@@ -9,21 +9,47 @@ var Patch = VDiff['Patch'];
 var applyPatches = VDiff['applyPatches'];
 var buildDOMTree = VDiff['buildDOMTree'];
 
-function build(count) {
+function render1(count) {
   var n = new VNode('root', null,'p');
 
-  if (count % 2 == 1) {
-    var child = new VNode(count, null,'h1');
-    child.appendChild(new VNode(count*2, null,'h1'));
+  var child;
+  if (count % 3 == 1) {
+    child = new VNode('heading', null,'h3');
+    child.appendChild(new VNode('another heading', null,'h3'));
+  } else if (count % 3 == 2) {
+    child = new VNode('div', null,'div');
+    child.appendChild(new VNode('another div', null,'div'));
   } else {
-    var child = new VNode(count, null,'p');
-    child.appendChild(new VNode(count*2, null,'p'));
+    child = new VNode('paragraph', null,'p');
+    child.appendChild(new VNode('another paragraph', null,'p'));
   }
-
   n.appendChild(child);
-  n.appendChild(new VNode('leaf', null,'p'));
 
+  n.appendChild(new VNode('end', null,'p'));
   return n;
+}
+
+function render2(count) {
+  var n = new VNode(count, null,'p');
+
+  var child = new VNode('heading', null,'h3');
+  child.appendChild(new VNode('another heading', null,'h3'));
+  n.appendChild(child);
+
+  var child = new VNode('div', null,'div');
+  child.appendChild(new VNode('another div', null,'div'));
+  n.appendChild(child);
+
+  var child = new VNode('paragraph', null,'p');
+  child.appendChild(new VNode('another paragraph', null,'p'));
+  n.appendChild(child);
+
+  n.appendChild(new VNode('end', null,'p'));
+  return n;
+}
+
+function build(count) {
+  return render1(count);
 }
 
 var count = 0;

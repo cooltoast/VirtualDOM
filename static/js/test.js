@@ -63,54 +63,89 @@ describe('VirtualDiff', function() {
   });
 
   describe('#diff()', function() {
-    it('should diff simple trees', function() {
-      a = new VNode(1, null);
-      b = new VNode(2, null);
-      numberTree(a);
-      assert(_.isEqual(diff(a,b), {0:[new Patch('replace', b)]}));
+    it('should not diff same nodeName and value', function() {
+      a = new VNode(1, null,'div');
+      b = new VNode(1, null,'div');
+      assert(_.isEqual(diff(a,b), {}));
     });
 
-    it('should diff an insert', function() {
+    it('should node_replace same nodename, diff value', function() {
+      a = new VNode(1, null,'div');
+      b = new VNode(2, null,'div');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('node_replace', b)]}));
+    });
+
+    it('should node_replace diff nodename, both simpleNodename, and same value', function() {
+      a = new VNode(1, null,'div');
+      b = new VNode(1, null,'p');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('node_replace', b)]}));
+    });
+
+    it('should tree_replace diff nodename, not both simpleNodename, and same value', function() {
+      a = new VNode(1, null,'div');
+      b = new VNode(1, null,'table');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('tree_replace', b)]}));
+    });
+
+    it('should node_replace diff nodename, both simpleNodename, and diff value', function() {
+      a = new VNode(1, null,'div');
+      b = new VNode(2, null,'p');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('node_replace', b)]}));
+    });
+
+    it('should tree_replace diff nodename, not both simpleNodename, and diff value', function() {
+      a = new VNode(1, null,'div');
+      b = new VNode(2, null,'table');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('tree_replace', b)]}));
+    });
+
+    it('should find an insert', function() {
       c = new VNode(2, null);
       d = new VNode(3, null);
       e = new VNode(4, null);
       f = new VNode(5, null);
       a = new VNode(1, [c,d,e]);
       b = new VNode(1, [c,d,e,f]);
-      numberTree(a);
       assert(_.isEqual(diff(a,b), {0:[new Patch('insert', f)]}));
     });
 
-    it('should diff a replacement', function() {
+    it('should find a node_replace and insertion', function() {
       c = new VNode(2, null);
       d = new VNode(3, null);
       e = new VNode(4, null);
       f = new VNode(5, null);
-      a = new VNode(1, [c,d,e]);
-      b = new VNode(10, [c,d,e,f]);
-      numberTree(a);
-      assert(_.isEqual(diff(a,b), {0:[new Patch('replace', b)]}));
+      a = new VNode(1, [c,d,e], 'div');
+      b = new VNode(10, [c,d,e,f], 'div');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('node_replace', b), new Patch('insert', f)]}));
     });
 
-    it('should diff a deletion', function() {
+    it('should find a tree_replace and insertion', function() {
+      c = new VNode(2, null);
+      d = new VNode(3, null);
+      e = new VNode(4, null);
+      f = new VNode(5, null);
+      a = new VNode(1, [c,d,e], 'div');
+      b = new VNode(10, [c,d,e,f], 'table');
+      assert(_.isEqual(diff(a,b), {0:[new Patch('tree_replace', b)]}));
+    });
+
+    it('should find a deletion', function() {
       c = new VNode(2, null);
       d = new VNode(3, null);
       e = new VNode(4, null);
       f = new VNode(5, null);
       a = new VNode(1, [c,d,e,f]);
       b = new VNode(1, [c,d,e]);
-      numberTree(a);
       assert(_.isEqual(diff(a,b), {4:[new Patch('delete')]}));
     });
 
-    it('should diff multiple insertions', function() {
+    it('should find multiple insertions', function() {
       c = new VNode(2, null);
       d = new VNode(3, null);
       e = new VNode(4, null);
       f = new VNode(5, null);
       a = new VNode(1);
       b = new VNode(1, [c,d,e,f]);
-      numberTree(a);
       assert(_.isEqual(diff(a,b), {0:[new Patch('insert', c),new Patch('insert', d),new Patch('insert', e),new Patch('insert', f)]}), "wrong answer");
     });
   });
