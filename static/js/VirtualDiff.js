@@ -1,10 +1,4 @@
-// return t2 subtree to overwrite on t1
-// actions: "delete", "insert", "node_replace", "tree_replace"
-function Patch(action, node) {
-  this.action = action;
-  this.node = node;
-  return this;
-}
+var Patch = require('./Patch');
 
 function numberTree(t) {
   numberTreeHelper(t, 0);
@@ -198,4 +192,4 @@ function applyPatches(root, patches) {
   return (newRoot != null) ? newRoot : root;
 };
 
-module.exports = {'numberTree':numberTree, 'diff':diff, 'Patch':Patch,'applyPatches':applyPatches,'buildDOMTree':buildDOMTree};
+module.exports = {'numberTree':numberTree, 'diff':diff, 'applyPatches':applyPatches,'buildDOMTree':buildDOMTree};

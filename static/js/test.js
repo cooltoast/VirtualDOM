@@ -5,7 +5,7 @@ var _ = require('lodash');
 
 var numberTree = VDiff['numberTree'];
 var diff = VDiff['diff'];
-var Patch = VDiff['Patch'];
+var Patch = require('./Patch');
 var applyPatches = VDiff['applyPatches'];
 var buildDOMTree = VDiff['buildDOMTree'];
 
