@@ -39,7 +39,7 @@ function validateTree(t) {
 }
 
 function diffHelper(t1, t2, patches) {
-  if (t1.value != t2.value) {
+  if ((t1.value != t2.value) || (t1.nodeName != t2.nodeName)) {
     patches[t1.index] = [new Patch('replace', t2)];
   } else {
     inspectChildren(t1, t2, patches);
@@ -106,7 +106,7 @@ function buildDOMTree(t) {
     return null;
   }
 
-  var dom = document.createElement('div');
+  var dom = document.createElement(t.nodeName.toLowerCase());
   dom.innerText = t.value;
 
   for (var i = 0; i < t.numChildren(); i++) {

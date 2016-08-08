@@ -1,6 +1,7 @@
-function VNode(value,children,index) {
+function VNode(value,children,nodeName,index) {
   this.value = value;
   this.children = children;
+  this.nodeName = nodeName;
   this.index = index;
 
   return this;

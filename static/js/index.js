@@ -10,8 +10,13 @@ var applyPatches = VDiff['applyPatches'];
 var buildDOMTree = VDiff['buildDOMTree'];
 
 function build(count) {
-  var n = new VNode(count, null);
-  n.appendChild(new VNode(count*2, null));
+  var n = new VNode(count, null,'p');
+  if (count % 2 == 1) {
+    n.appendChild(new VNode(count*2, null,'h1'));
+  } else {
+    n.appendChild(new VNode(count*2, null,'p'));
+  }
+
   return n;
 }
 
