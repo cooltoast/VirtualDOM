@@ -1,6 +1,10 @@
 var VNode = require('./VirtualNode');
-var numberTree = require('./VirtualDiff');
+var VDiff = require('./VirtualDiff');
 var _ = require('lodash');
+
+var numberTree = VDiff['numberTree'];
+var diff = VDiff['diff'];
+var Patch = VDiff['Patch']
 
 function assert(condition, message) {
   if (!condition) {
@@ -8,8 +12,54 @@ function assert(condition, message) {
   }
 }
 
-var a = new VNode(1, []);
-var b = new VNode(1, [], 0);
+var a,b,c,d,e,f;
+
+a = new VNode(1, null);
+b = new VNode(2, null);
+numberTree(a);
+assert(_.isEqual(diff(a,b), {0:[new Patch('replace', b)]}), "wrong answer");
+
+c = new VNode(2, null);
+d = new VNode(3, null);
+e = new VNode(4, null);
+f = new VNode(5, null);
+a = new VNode(1, [c,d,e]);
+b = new VNode(1, [c,d,e,f]);
+numberTree(a);
+assert(_.isEqual(diff(a,b), {0:[new Patch('insert', f)]}), "wrong answer");
+
+c = new VNode(2, null);
+d = new VNode(3, null);
+e = new VNode(4, null);
+f = new VNode(5, null);
+a = new VNode(1, [c,d,e]);
+b = new VNode(10, [c,d,e,f]);
+numberTree(a);
+assert(_.isEqual(diff(a,b), {0:[new Patch('replace', b)]}), "wrong answer");
+
+c = new VNode(2, null);
+d = new VNode(3, null);
+e = new VNode(4, null);
+f = new VNode(5, null);
+a = new VNode(1, [c,d,e]);
+b = new VNode(1, [c,d,e,f]);
+numberTree(a);
+assert(_.isEqual(diff(a,b), {0:[new Patch('insert', f)]}), "wrong answer");
+
+c = new VNode(2, null);
+d = new VNode(3, null);
+e = new VNode(4, null);
+f = new VNode(5, null);
+a = new VNode(1);
+b = new VNode(1, [c,d,e,f]);
+numberTree(a);
+assert(_.isEqual(diff(a,b), {0:[new Patch('insert', c),new Patch('insert', d),new Patch('insert', e),new Patch('insert', f)]}), "wrong answer");
+
+
+/* *** */
+
+a = new VNode(1, null);
+b = new VNode(1, null, 0);
 numberTree(a);
 assert(_.isEqual(a,b));
 

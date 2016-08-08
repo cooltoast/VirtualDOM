@@ -6,6 +6,10 @@ function VNode(value,children,index) {
   return this;
 };
 
+VNode.prototype.numChildren = function() {
+  return (this.children == null) ? 0 : this.children.length;
+}
+
 VNode.prototype.appendChild = function(child) {
   if (this.children != null) {
     this.children.push(child);
