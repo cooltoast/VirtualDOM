@@ -1,11 +1,19 @@
-function VNode(value,children,nodeName,index) {
+function getUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+          });
+}
+
+function VNode(value,children,nodeName) {
   this.value = value;
   this.children = children;
   this.nodeName = nodeName;
-  this.index = index;
+  this.id = getUUID();
 
   return this;
 };
+
 
 VNode.prototype.numChildren = function() {
   return (this.children == null) ? 0 : this.children.length;
