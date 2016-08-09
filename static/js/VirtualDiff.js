@@ -23,6 +23,9 @@ function diffHelper(t1, t2, patches) {
     if (t1.value != t2.value) {
       p = new Patch('node_replace', t2);
       appendPatch(patches, p, t1);
+    } else {
+      // retain same node id
+      t2.id = t1.id;
     }
   } else { // ((t1.nodeName != t2.nodeName))
     if (t1.isSimpleNodename() && t2.isSimpleNodename()) {
