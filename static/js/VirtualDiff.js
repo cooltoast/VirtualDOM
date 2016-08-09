@@ -128,7 +128,6 @@ function applyPatch(vNodeId, patch) {
         var newDom = buildDOMTree(p.node);
         dom.appendChild(newDom);
         result = dom;
-        //DOMmap[p.node] = newDom;
     }
   }
 
