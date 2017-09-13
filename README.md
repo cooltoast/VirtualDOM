@@ -1,5 +1,6 @@
 VirtualDOM
 ========
+[![Build Status](https://travis-ci.org/cooltoast/VirtualDOM.svg?branch=master)](https://travis-ci.org/cooltoast/VirtualDOM)
 
 Installation
 ----
