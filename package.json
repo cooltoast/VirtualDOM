@@ -8,7 +8,8 @@
   "author": "@cooltoast",
   "homepage": "https://github.com/cooltoast/VirtualDOM",
   "dependencies": {
-    "es6-promise": "3.0.2"
+    "es6-promise": "3.0.2",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel-core": "5.8.25",

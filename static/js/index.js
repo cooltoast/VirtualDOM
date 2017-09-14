@@ -1,6 +1,7 @@
 var VNode = require('./VirtualNode');
 var {diff, applyPatches, buildDOMTree} = require('./VirtualDiff');
 
+/*
 function render1(count) {
   var n = new VNode('root', null, 'p');
 
@@ -37,6 +38,7 @@ function render2(count) {
   n.appendChild(new VNode('end', null, 'p'));
   return n;
 }
+*/
 
 function render3(count) {
   var n = new VNode('root', null, 'p');
@@ -56,8 +58,8 @@ var build = render3;
 
 var count = 0;
 var vDom = build(count);
-var rootNode = buildDOMTree(vDom);     // Create an initial root DOM node ...
-document.body.appendChild(rootNode);    // ... and it should be in the document
+var rootNode = buildDOMTree(vDom);
+document.body.appendChild(rootNode);
 
 setInterval(function() {
   count++;
