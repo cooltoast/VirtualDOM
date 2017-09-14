@@ -6,7 +6,7 @@ Installation
 ----
 Install packages
 ```
-npm install
+yarn
 ```
 Run local server
 ```
