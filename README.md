@@ -1,6 +1,7 @@
 VirtualDOM
 ========
 [![Build Status](https://travis-ci.org/cooltoast/VirtualDOM.svg?branch=master)](https://travis-ci.org/cooltoast/VirtualDOM)
+[![Dependency Status](https://david-dm.org/cooltoast/virtualDOM.svg)](https://david-dm.org/cooltoast/virtualDOM)
 
 Installation
 ----
@@ -10,9 +11,13 @@ yarn
 ```
 Run local server
 ```
-npm run watch
+yarn watch
+```
+Lint
+```
+yarn lint
 ```
 Run tests
 ```
-npm run test
+yarn test
 ```
